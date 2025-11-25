@@ -1,0 +1,52 @@
+prompt = f"""
+Generate an `async def solve()` function using available tools to answer the query.
+
+🔧 Tools: {tool_descriptions}
+🧠 Query: "{user_input}"
+
+RULES:
+• Define `async def solve():` with max ONE tool call
+• Tool syntax: await mcp.call_tool('tool_name', {{"input": {{...}}}})
+• Include tool docstring before each call
+• Parse results: parsed = json.loads(result.content[0].text)["result"]
+• Return: f"FINAL_ANSWER: {{answer}}" OR f"FURTHER_PROCESSING_REQUIRED: {{result}}"
+• Use FURTHER_PROCESSING_REQUIRED for raw documents/webpages
+• Math tools available: Use them for calculations (log, exp, power, etc.) after extracting numbers
+• 🚨 CRITICAL: If user input already contains data/results, DO NOT fetch again—synthesize directly
+
+Example 1 - Chain tools:
+```python
+import json
+async def solve():
+    """Tool 1 docstring"""
+    input = {{"input": {{"string": "INDIA"}}}}
+    result = await mcp.call_tool('strings_to_chars_to_int', input)
+    nums = json.loads(result.content[0].text)["result"]
+    
+    """Tool 2 docstring"""
+    input = {{"input": {{"numbers": nums}}}}
+    result = await mcp.call_tool('exp_sum', input)
+    final = json.loads(result.content[0].text)["result"]
+    return f"FINAL_ANSWER: {{final}}"
+```
+
+Example 2 - Fetch document:
+```python
+async def solve():
+    """Search docs"""
+    input = {{"input": {{"query": "info"}}}}
+    result = await mcp.call_tool('search_docs', input)
+    return f"FURTHER_PROCESSING_REQUIRED: {{result}}"
+```
+
+Example 3 - NO TOOL (synthesize existing data):
+```python
+async def solve():
+    # User input already has search results - extract answer
+    answer = "Based on provided data: [synthesized answer]"
+    return f"FINAL_ANSWER: {{answer}}"
+```
+
+Output only Python code, no explanations.
+"""
+

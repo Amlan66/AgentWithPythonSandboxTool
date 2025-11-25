@@ -1,0 +1,107 @@
+# Heuristics Configuration for Agent Safety
+# This file defines safety constraints and validation rules
+
+# Input validation
+input:
+  max_length: 50000  # Maximum characters in user input
+  allow_non_ascii: true  # Allow Unicode characters
+  strict_ascii: false  # If true, only ASCII allowed
+
+# JSON validation
+json:
+  max_depth: 10  # Maximum nesting depth for JSON structures
+
+# Network/URL validation
+network:
+  request_timeout_seconds: 10  # Timeout for HTTP requests
+  max_url_calls_per_domain: 5  # Max calls to same domain
+  url_call_window_seconds: 60  # Time window for rate limiting
+  blocked_hosts:
+    - localhost
+    - 127.0.0.1
+    - 0.0.0.0
+    - "::1"
+  blocked_ip_ranges:
+    - "192.168.*"
+    - "10.*"
+    - "172.16.*"
+
+# File operations
+files:
+  max_files_per_call: 3  # Maximum files in single operation
+  blocked_paths:
+    - "/etc/"
+    - "/sys/"
+    - "/proc/"
+    - "/dev/"
+    - "/boot/"
+    - "/var/"
+    - "/usr/bin/"
+    - "C:\\Windows\\"
+    - "C:\\Program Files\\"
+  allowed_extensions:
+    - ".txt"
+    - ".pdf"
+    - ".docx"
+    - ".md"
+    - ".csv"
+    - ".json"
+    - ".xml"
+
+# Command execution safety
+commands:
+  blocked_commands:
+    - "rm -rf"
+    - "rm -fr"
+    - "rmdir /s"
+    - "del /f"
+    - "format"
+    - "dd if=/dev/zero"
+    - ":(){:|:&};:"  # fork bomb
+    - "mkfs"
+    - "sudo rm"
+    - "> /dev/sda"
+    - "mv /* "
+    - "chmod -R 777 /"
+    - "chown -R"
+  blocked_imports:
+    - "subprocess"
+    - "os.system"
+    - "__import__"
+    - "execfile"
+  allowed_imports:
+    - "json"
+    - "re"
+    - "math"
+    - "datetime"
+
+# Plan/code generation
+plan:
+  max_length: 10000  # Maximum length of generated code
+  max_tool_calls: 5  # Maximum tool calls per plan
+  max_recursion_depth: 10
+
+# Memory and resource limits
+resources:
+  max_data_size_mb: 100  # Maximum data size to process
+  max_session_duration_hours: 24
+
+# Tool registry
+tools:
+  enforce_registry_check: true  # Only allow registered tools
+  log_all_tool_calls: true  # Log every tool invocation
+
+# Security patterns
+security:
+  check_api_key_exposure: true
+  check_sql_injection: true
+  check_command_injection: true
+  check_path_traversal: true
+
+# Logging and monitoring
+monitoring:
+  log_violations: true
+  log_warnings: true
+  fail_on_error: true  # Stop execution on errors
+  allow_warnings: true  # Continue on warnings
+
