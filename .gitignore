@@ -3,5 +3,4 @@ __pycache__/
 .env
 /documents/
 /faiss_index/
-/memory/
 test_heuristics.py
